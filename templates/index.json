@@ -9,13 +9,6 @@
  */
 {
   "sections": {
-    "test_EDaTjE": {
-      "type": "test",
-      "name": "test",
-      "settings": {
-        "product": "brush-de-copy-for-test"
-      }
-    },
     "collection_list_8FXcgx": {
       "type": "collection-list",
       "blocks": {
@@ -178,6 +171,13 @@
         "color_scheme": "",
         "padding-block-start": 24,
         "padding-block-end": 24
+      }
+    },
+    "test_EDaTjE": {
+      "type": "test",
+      "name": "test",
+      "settings": {
+        "product": "brush"
       }
     }
   },
