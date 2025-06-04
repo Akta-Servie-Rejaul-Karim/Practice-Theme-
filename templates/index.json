@@ -177,10 +177,16 @@
       "settings": {
         "product": "brush"
       }
+    },
+    "testee_VVNp3F": {
+      "type": "testee",
+      "name": "test t",
+      "settings": {}
     }
   },
   "order": [
     "collection_list_8FXcgx",
-    "test_EDaTjE"
+    "test_EDaTjE",
+    "testee_VVNp3F"
   ]
 }
