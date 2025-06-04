@@ -27,24 +27,53 @@
 
 
 
- <script>
-    var swiper = new Swiper(".mySwiper", {
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Initialize Swipers
+    const thumbsSwiper = new Swiper(".mySwiper", {
       spaceBetween: 10,
       slidesPerView: 4,
       freeMode: true,
       watchSlidesProgress: true,
     });
-    var swiper2 = new Swiper(".mySwiper2", {
+
+    const mainSwiper = new Swiper(".mySwiper2", {
       spaceBetween: 10,
       navigation: {
         nextEl: ".swiper-button-next",
         prevEl: ".swiper-button-prev",
       },
       thumbs: {
-        swiper: swiper,
+        swiper: thumbsSwiper,
       },
     });
-  </script>
+
+    // Helper: Find slide index by data-media-id
+    function findSlideIndexByMediaId(mediaId) {
+      const slides = document.querySelectorAll('.mySwiper2 .swiper-slide');
+      for (let i = 0; i < slides.length; i++) {
+        if (slides[i].dataset.mediaId === mediaId.toString()) {
+          return i;
+        }
+      }
+      return -1;
+    }
+
+    // When variant is selected and mediaId is stored globally
+    document.querySelectorAll('.variant-picker input[type="radio"]').forEach(input => {
+      input.addEventListener("change", function () {
+        const mediaId = window.selectedMediaId;
+        if (!mediaId) return;
+
+        const index = findSlideIndexByMediaId(mediaId);
+        if (index >= 0) {
+          mainSwiper.slideTo(index);
+        }
+      });
+    });
+  });
+</script>
+
 
 
 
