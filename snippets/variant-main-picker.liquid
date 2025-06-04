@@ -503,6 +503,8 @@
       input.addEventListener("change", function () {
         const variantId = input.dataset.variantId;
         const mediaId = getMediaIdByVariantId(variantId);
+        window.selectedMediaId = mediaId;
+        
         console.log("Variant ID:", variantId);
         console.log("Media ID:", mediaId);
       });
