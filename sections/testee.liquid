@@ -1,5 +1,5 @@
 {% if section.settings.image != blank %}
-  {{ section.settings.image | image_url: width: 600 | image_tag }}
+ {{ section.settings.image | image_url }}
 {% else %}
   {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
 {% endif %}
