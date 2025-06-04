@@ -17,7 +17,7 @@
     <div class="swiper-wrapper">
      {%  for media in product.media %}
         <div class="swiper-slide">
-         {{ media | image_url: width: 600, height: auto | image_tag  }}
+         {{ media | image_url: width: 600, height: auto | image_tag: loading: lazy }}
         </div>
       {% endfor %}
      
