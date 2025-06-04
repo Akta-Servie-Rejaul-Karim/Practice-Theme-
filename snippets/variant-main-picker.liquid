@@ -476,20 +476,35 @@
     </form>
   </variant-picker>
 {% endunless %}
+<script type="application/json" id="ProductVariants">
+  {{ product_resource.variants | json }}
+</script>
 
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    // Listen for changes on all radio buttons inside the variant picker
+    const variantDataEl = document.getElementById("ProductVariants");
+
+    if (!variantDataEl) return;
+
+    const variants = JSON.parse(variantDataEl.textContent);
+
+    // Assume you already have the selected variantId (e.g., from radio change)
+    function getMediaIdByVariantId(variantId) {
+      const variant = variants.find(v => v.id == variantId);
+      if (variant && variant.featured_media) {
+        return variant.featured_media.id;
+      }
+      return null;
+    }
+
+    // Example: on variant change
     document.querySelectorAll('.variant-picker input[type="radio"]').forEach(input => {
       input.addEventListener("change", function () {
-        const selectedValue = input.value;
         const variantId = input.dataset.variantId;
-        const optionLabel = input.closest('label')?.querySelector('.variant-option__button-label__text')?.innerText;
-
-        console.log("Selected Option:", selectedValue);
+        const mediaId = getMediaIdByVariantId(variantId);
         console.log("Variant ID:", variantId);
-        console.log("Label Text:", optionLabel);
+        console.log("Media ID:", mediaId);
       });
     });
   });
