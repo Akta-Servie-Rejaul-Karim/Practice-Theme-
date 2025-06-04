@@ -28,51 +28,45 @@
 
 
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    // Initialize Swipers
-    const thumbsSwiper = new Swiper(".mySwiper", {
-      spaceBetween: 10,
-      slidesPerView: 4,
-      freeMode: true,
-      watchSlidesProgress: true,
-    });
+  var swiper = new Swiper(".mySwiper", {
+    spaceBetween: 10,
+    slidesPerView: 4,
+    freeMode: true,
+    watchSlidesProgress: true,
+  });
 
-    const mainSwiper = new Swiper(".mySwiper2", {
-      spaceBetween: 10,
-      navigation: {
-        nextEl: ".swiper-button-next",
-        prevEl: ".swiper-button-prev",
-      },
-      thumbs: {
-        swiper: thumbsSwiper,
-      },
-    });
+  var swiper2 = new Swiper(".mySwiper2", {
+    spaceBetween: 10,
+    navigation: {
+      nextEl: ".swiper-button-next",
+      prevEl: ".swiper-button-prev",
+    },
+    thumbs: {
+      swiper: swiper,
+    },
+  });
 
-    // Helper: Find slide index by data-media-id
-    function findSlideIndexByMediaId(mediaId) {
+  // Listen for variant change
+  document.addEventListener("variant:change", function (e) {
+    const { mediaId } = e.detail;
+
+    if (mediaId) {
       const slides = document.querySelectorAll('.mySwiper2 .swiper-slide');
-      for (let i = 0; i < slides.length; i++) {
-        if (slides[i].dataset.mediaId === mediaId.toString()) {
-          return i;
-        }
-      }
-      return -1;
-    }
+      let targetIndex = -1;
 
-    // When variant is selected and mediaId is stored globally
-    document.querySelectorAll('.variant-picker input[type="radio"]').forEach(input => {
-      input.addEventListener("change", function () {
-        const mediaId = window.selectedMediaId;
-        if (!mediaId) return;
-
-        const index = findSlideIndexByMediaId(mediaId);
-        if (index >= 0) {
-          mainSwiper.slideTo(index);
+      slides.forEach((slide, index) => {
+        if (slide.dataset.mediaId == mediaId) {
+          targetIndex = index;
         }
       });
-    });
+
+      if (targetIndex !== -1) {
+        swiper2.slideTo(targetIndex);
+      }
+    }
   });
 </script>
+
 
 
 
