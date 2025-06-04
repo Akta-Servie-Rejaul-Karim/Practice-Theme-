@@ -1,7 +1,7 @@
 {% if section.settings.image != blank %}
   {{ section.settings.image | image_url: width: 600 | image_tag }}
 {% else %}
-  {{ 'shirt' | placeholder_svg_tag: 'placeholder-svg' }}
+  {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
 {% endif %}
 
 {% schema %}
