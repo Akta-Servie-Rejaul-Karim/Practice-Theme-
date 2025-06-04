@@ -181,7 +181,9 @@
     "testee_VVNp3F": {
       "type": "testee",
       "name": "test t",
-      "settings": {}
+      "settings": {
+        "image": "shopify://shop_images/tongue-scraper-2.webp"
+      }
     }
   },
   "order": [
