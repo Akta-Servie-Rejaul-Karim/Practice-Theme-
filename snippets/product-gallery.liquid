@@ -5,7 +5,7 @@
   <div style="--swiper-navigation-color: #fff; --swiper-pagination-color: #fff" class="swiper mySwiper2">
     <div class="swiper-wrapper">
       {%  for media in product.media %}
-      <div class="swiper-slide">
+      <div class="swiper-slide" data-media-id="{{ media.id }}">
         {{ media | image_url: width: 600, height: auto | image_tag  }}
       </div>  
         {% endfor %}
@@ -16,10 +16,9 @@
   <div thumbsSlider="" class="swiper mySwiper">
     <div class="swiper-wrapper">
      {%  for media in product.media %}
-        <div class="swiper-slide">
+        <div class="swiper-slide" data-media-id="{{ media.id }}">
          {{ media | image_url: width: 600, height: auto | image_tag: loading: lazy }}
         </div>
-       
       {% endfor %}
      
   </div>  
@@ -47,13 +46,6 @@
     });
   </script>
 
-<script>
-  document.querySelectorAll('.variant-option__button-label').forEach(item => {
-    item.addEventListener('click', () => {
-      console.log('I am clicked');
-    });
-  });
-</script>
 
 
 
