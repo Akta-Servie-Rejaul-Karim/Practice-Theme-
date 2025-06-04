@@ -6,7 +6,7 @@
     <div class="swiper-wrapper">
       {%  for media in product.media %}
       <div class="swiper-slide">
-        <img src="https://swiperjs.com/demos/images/nature-1.jpg" />
+        {{ media | image_url: width: 600, height: auto | image_tag  }}
       </div>  
         {% endfor %}
     </div>
@@ -15,7 +15,7 @@
   </div>
   <div thumbsSlider="" class="swiper mySwiper">
     <div class="swiper-wrapper">
-        {%  for media in product.media %}
+     {%  for media in product.media %}
         <div class="swiper-slide">
           <img src="https://swiperjs.com/demos/images/nature-1.jpg" />
         </div>
