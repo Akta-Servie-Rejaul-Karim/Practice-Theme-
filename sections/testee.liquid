@@ -1,6 +1,14 @@
+{% if section.settings.image != blank %}
+  <img src="{{ section.settings.image | img_url: 'master' }}" alt="Image">
+{% else %}
+  {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+{% endif %}
+
 {% schema %}
   {
-    "name": "Section name",
-    "settings": []
+    "name": "test t",
+    "settings": [
+      
+    ]
   }
 {% endschema %}
