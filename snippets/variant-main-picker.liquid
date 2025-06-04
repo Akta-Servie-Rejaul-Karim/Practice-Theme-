@@ -489,7 +489,6 @@
 
     const variants = JSON.parse(variantDataEl.textContent);
 
-    // Assume you already have the selected variantId (e.g., from radio change)
     function getMediaIdByVariantId(variantId) {
       const variant = variants.find(v => v.id == variantId);
       if (variant && variant.featured_media) {
@@ -498,18 +497,28 @@
       return null;
     }
 
-    // Example: on variant change
     document.querySelectorAll('.variant-picker input[type="radio"]').forEach(input => {
       input.addEventListener("change", function () {
         const variantId = input.dataset.variantId;
         const mediaId = getMediaIdByVariantId(variantId);
         window.selectedMediaId = mediaId;
-        
+
         console.log("Variant ID:", variantId);
         console.log("Media ID:", mediaId);
+
+        // Dispatch custom event with mediaId
+        const event = new CustomEvent("variant:change", {
+          detail: {
+            variantId: variantId,
+            mediaId: mediaId
+          }
+        });
+
+        document.dispatchEvent(event); // You could also dispatch to a specific element
       });
     });
   });
 </script>
+
 
 
