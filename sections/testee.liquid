@@ -1,5 +1,5 @@
 {% if section.settings.image != blank %}
-  {%- assign widths = "300,600,900" | split: "," -%}
+  assign widths = widths | default: '300, 450, 600, 750, 900, 1050, 1200, 1350, 1500, 1650, 1800, 1950, 2000, 2500, 3000, 3500, 4000, 5000'
   {%- assign sizes = "(max-width: 600px) 300px, 600px" -%}
   {%- assign loading = "lazy" -%}
   {{
