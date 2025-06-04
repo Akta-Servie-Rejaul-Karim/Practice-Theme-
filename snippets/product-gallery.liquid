@@ -48,7 +48,11 @@
 
 <script>
   let label = document.querySelectorAll('.variant-option__button-label');
-  console.log(label)
+  label.forEach( item => {
+    item.addEventListener('click', ()=>{
+      consle.log('i am clicked')
+    })
+  })
 </script>
 
 
