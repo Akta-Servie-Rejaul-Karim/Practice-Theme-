@@ -227,7 +227,8 @@
         class="product-information__media"
         data-testid="product-information-media"
       >
-       {% render 'product-gallery', product: product %}
+       {% render 'product-gallery' %}
+      </div>
       </div>
     {% endcapture %}
 
@@ -247,7 +248,7 @@
       {% endif %}
     {% endfor %}
   </div>
- </div>
+
   {% content_for 'blocks' %}
 </div>
 
