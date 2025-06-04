@@ -12,34 +12,6 @@
     "main": {
       "type": "product-information",
       "blocks": {
-        "media-gallery": {
-          "type": "_product-media-gallery",
-          "static": true,
-          "settings": {
-            "product": "{{ closest.product }}",
-            "media_presentation": "carousel",
-            "media_columns": "one",
-            "image_gap": 20,
-            "large_first_image": false,
-            "icons_style": "chevron",
-            "slideshow_controls_style": "thumbnails",
-            "slideshow_mobile_controls_style": "dots",
-            "thumbnail_position": "bottom",
-            "thumbnail_width": 52,
-            "aspect_ratio": "adapt",
-            "media_radius": 0,
-            "extend_media": true,
-            "constrain_to_viewport": false,
-            "zoom": true,
-            "video_loop": false,
-            "hide_variants": true,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
-        },
         "product-details": {
           "type": "_product-details",
           "static": true,
@@ -182,20 +154,6 @@
               },
               "blocks": {}
             },
-            "subscriptions_app_block_c9Fmkk": {
-              "type": "shopify://apps/subscriptions/blocks/app-block/a3bfe9ec-96f8-4508-a003-df608a36d2ad",
-              "settings": {
-                "color_text_title": "#000000",
-                "color_text_body": "#6d7175",
-                "dividers_color": "#8f8d8d",
-                "bacgkround_color": "#ffffff",
-                "border_thickness": 3,
-                "border_radius": 15,
-                "supporting_text_title": "Purchase options",
-                "subscription_policy_url": "",
-                "product": "{{product}}"
-              }
-            },
             "buy_buttons_eYQEYi": {
               "type": "buy-buttons",
               "settings": {
@@ -242,7 +200,6 @@
             "group_icgrde",
             "divider_VJhene",
             "variant_picker_R3rGDr",
-            "subscriptions_app_block_c9Fmkk",
             "buy_buttons_eYQEYi"
           ]
         }
