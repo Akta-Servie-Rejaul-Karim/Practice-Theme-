@@ -476,3 +476,13 @@
     </form>
   </variant-picker>
 {% endunless %}
+
+
+      <script>
+  document.querySelectorAll('.variant-option__button-label').forEach(item => {
+    item.addEventListener('click', () => {
+      console.log('I am clicked');
+    });
+  });
+</script>
+
