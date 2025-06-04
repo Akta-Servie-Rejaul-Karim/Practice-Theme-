@@ -1,7 +1,7 @@
 {% if section.settings.image != blank %}
   <img src="{{ section.settings.image | img_url: 'master' }}" alt="Image">
 {% else %}
-  {{ 'logo' | placeholder_svg_tag: 'placeholder-svg' }}
+  {{ 'shirt' | placeholder_svg_tag: 'placeholder-svg' }}
 {% endif %}
 
 {% schema %}
