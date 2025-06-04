@@ -184,11 +184,40 @@
       "settings": {
         "image": "shopify://shop_images/tongue-scraper-2.webp"
       }
+    },
+    "marquee_9PLr3a": {
+      "type": "marquee",
+      "blocks": {
+        "icon_TjYHia": {
+          "type": "icon",
+          "name": "t:names.icon",
+          "settings": {
+            "icon": "price_tag",
+            "image_upload": "shopify://shop_images/Untitleddesign_5.jpg",
+            "width": 94,
+            "link": "",
+            "open_in_new_tab": false
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "icon_TjYHia"
+      ],
+      "name": "t:names.marquee_section",
+      "settings": {
+        "movement_direction": "normal",
+        "color_scheme": "",
+        "padding-block-start": 24,
+        "padding-block-end": 24,
+        "gap_between_elements": 24
+      }
     }
   },
   "order": [
     "collection_list_8FXcgx",
     "test_EDaTjE",
-    "testee_VVNp3F"
+    "testee_VVNp3F",
+    "marquee_9PLr3a"
   ]
 }
