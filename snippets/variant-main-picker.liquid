@@ -479,10 +479,20 @@
 
 
 <script>
-      document.querySelectorAll('.variant-option__button-label').forEach(item => {
-        item.addEventListener('click', () => {
-          console.log('I am clicked');
-        });
+  document.addEventListener("DOMContentLoaded", function () {
+    // Listen for changes on all radio buttons inside the variant picker
+    document.querySelectorAll('.variant-picker input[type="radio"]').forEach(input => {
+      input.addEventListener("change", function () {
+        const selectedValue = input.value;
+        const variantId = input.dataset.variantId;
+        const optionLabel = input.closest('label')?.querySelector('.variant-option__button-label__text')?.innerText;
+
+        console.log("Selected Option:", selectedValue);
+        console.log("Variant ID:", variantId);
+        console.log("Label Text:", optionLabel);
       });
+    });
+  });
 </script>
+
 
