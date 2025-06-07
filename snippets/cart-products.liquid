@@ -658,58 +658,74 @@
       data-plan-id="{{ subscription_plan_id }}"
       {% if item.selling_plan_allocation %}checked{% endif %}
       id="{{ item.key }}" 
+      data-quantity="{{ item.quantity }}"
       type="checkbox">
       <label class="toggle-label" for="{{ item.key }}"></label>
     </div>
 
 {% endif %}
-
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-  const currentDrawer2 = document.querySelector('cart-drawer-component');
-  console.log(currentDrawer2)
-  document.querySelectorAll('.subscribe-toggle-checkbox').forEach(function (checkbox) {
-    checkbox.addEventListener('change', function () {
-      const itemKey = this.dataset.key;
-      const planId = this.dataset.planId;
-      const isChecked = this.checked;
+  document.addEventListener('DOMContentLoaded', function () {
+    document.body.addEventListener('change', function (event) {
+      const checkbox = event.target;
 
-      fetch('/cart/change.js', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({
-          id: itemKey,
-          quantity: 1,
-          selling_plan: isChecked ? planId : null
-        })
-      })
-      .then(response => response.json())
-      .then(() => {
-        // Fetch updated cart page
-        return fetch('/cart?view=ajax'); // Use ?view=ajax to return partial HTML if you've set that up
-      })
-      .then(response => response.text())
-      .then(html => {
-        // Parse the returned HTML string
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
+      // Check if the event target is a subscribe toggle checkbox
+      if (checkbox.classList.contains('subscribe-toggle-checkbox')) {
+        const itemKey = checkbox.dataset.key;
+        const planId = checkbox.dataset.planId;
+        const isChecked = checkbox.checked;
+        const cartItem = checkbox.closest('[data-cart-item]');
+        let quantity = 1;
 
-        // Replace the drawer content
-        const newDrawer = doc.querySelector('.cart-items__wrapper');
-        const currentDrawer = document.querySelector('.cart-items__wrapper');
-
-        if (newDrawer && currentDrawer) {
-          currentDrawer.innerHTML = newDrawer.innerHTML;
+        if (cartItem) {
+          const quantityInput = cartItem.querySelector('input[name="updates[]"]');
+          if (quantityInput) {
+            quantity = parseInt(quantityInput.value, 10) || 1;
+          }
         }
 
-      });
+        fetch('/cart/change.js', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: JSON.stringify({
+            id: itemKey,      
+            quantity: quantity,      
+            selling_plan: isChecked ? planId : null
+          })
+        })
+        .then(response => {
+          if (!response.ok) throw new Error('Cart change failed');
+          return response.json();
+        })
+        .then(() => {
+          return fetch('/cart?section_id=cart-drawer');
+        })
+        .then(response => response.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, 'text/html');
+
+          const newDrawerContent = doc.querySelector('.cart-items__wrapper');
+          const currentDrawerContent = document.querySelector('.cart-items__wrapper');
+
+          if (newDrawerContent && currentDrawerContent) {
+            currentDrawerContent.innerHTML = newDrawerContent.innerHTML;
+            console.log('Cart drawer updated successfully.');
+          } else {
+            console.warn('Cart items wrapper not found in AJAX response.');
+          }
+        })
+        .catch(error => {
+          console.error('Error updating cart drawer:', error);
+        });
+      }
     });
   });
-});
 </script>
+
 
 
 
