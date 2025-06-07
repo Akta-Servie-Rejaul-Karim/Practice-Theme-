@@ -698,12 +698,13 @@ document.addEventListener('DOMContentLoaded', function () {
         const doc = parser.parseFromString(html, 'text/html');
 
         // Replace the drawer content
-        const newDrawer = doc.querySelector('cart-drawer-component');
-        const currentDrawer = document.querySelector('cart-drawer-component');
-        console.log(currentDrawer)
+        const newDrawer = doc.querySelector('.cart-items__wrapper');
+        const currentDrawer = document.querySelector('.cart-items__wrapper');
+
         if (newDrawer && currentDrawer) {
           currentDrawer.innerHTML = newDrawer.innerHTML;
         }
+
       });
     });
   });
