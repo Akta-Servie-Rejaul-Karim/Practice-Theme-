@@ -607,6 +607,116 @@
                     {% endif %}
                   {%- endif -%}
 
+
+<style>
+  .subscribe-toggle {
+    position: relative;
+  }
+
+  input[type="checkbox"] {
+    display: none;
+  }
+
+  label.toggle-label {
+    height: 20px;
+    width: 50px;
+    display: block;
+    background: #ddd;
+    border-radius: 10px;
+    cursor: pointer;
+    position: relative;
+    transition:  0.3s;
+  }
+
+  label.toggle-label::after {
+    content: "";
+    position: absolute;
+    height: 15px;
+    width: 15px;
+    top: 2.5px;
+    left: 3px;
+    background: green;
+    border-radius: 50%;
+    transition: 0.3s;
+  }
+
+  input[type="checkbox"]:checked + label.toggle-label {
+    background: green;
+  }
+
+  input[type="checkbox"]:checked + label.toggle-label::after {
+    left: 32px; 
+    background: #fff; 
+  }
+</style>
+
+{% if item.product.selling_plan_groups.size > 0 %}
+  {% assign subscription_plan_id = item.product.selling_plan_groups[0].selling_plans[0].id %}
+    <div class="subscribe-toggle">
+      <input class="subcribe-toggle subscribe-toggle-checkbox"      
+      data-key="{{ item.key }}" 
+      data-plan-id="{{ subscription_plan_id }}"
+      {% if item.selling_plan_allocation %}checked{% endif %}
+      id="{{ item.key }}" 
+      type="checkbox">
+      <label class="toggle-label" for="{{ item.key }}"></label>
+    </div>
+
+{% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const currentDrawer2 = document.querySelector('cart-drawer-component');
+  console.log(currentDrawer2)
+  document.querySelectorAll('.subscribe-toggle-checkbox').forEach(function (checkbox) {
+    checkbox.addEventListener('change', function () {
+      const itemKey = this.dataset.key;
+      const planId = this.dataset.planId;
+      const isChecked = this.checked;
+
+      fetch('/cart/change.js', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          id: itemKey,
+          quantity: 1,
+          selling_plan: isChecked ? planId : null
+        })
+      })
+      .then(response => response.json())
+      .then(() => {
+        // Fetch updated cart page
+        return fetch('/cart?view=ajax'); // Use ?view=ajax to return partial HTML if you've set that up
+      })
+      .then(response => response.text())
+      .then(html => {
+        // Parse the returned HTML string
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        // Replace the drawer content
+        const newDrawer = doc.querySelector('cart-drawer-component');
+        const currentDrawer = document.querySelector('cart-drawer-component');
+        console.log(currentDrawer)
+        if (newDrawer && currentDrawer) {
+          currentDrawer.innerHTML = newDrawer.innerHTML;
+        }
+      });
+    });
+  });
+});
+</script>
+
+
+
+
+
+
+
+
                   {% if item.line_level_discount_allocations.size > 0 %}
                     <ul
                       class="list-unstyled"
