@@ -674,15 +674,7 @@
         const itemKey = checkbox.dataset.key;
         const planId = checkbox.dataset.planId;
         const isChecked = checkbox.checked;
-        const cartItem = checkbox.closest('[data-cart-item]');
-        let quantity = 1;
-
-        if (cartItem) {
-          const quantityInput = cartItem.querySelector('input[name="updates[]"]');
-          if (quantityInput) {
-            quantity = parseInt(quantityInput.value, 10) || 1;
-          }
-        }
+        const quantity = parseInt(checkbox.dataset.quantity, 10) || 1;
 
         fetch('/cart/change.js', {
           method: 'POST',
