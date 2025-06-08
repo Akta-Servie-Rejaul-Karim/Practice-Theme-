@@ -1,6 +1,596 @@
+{% doc %}
+  @prompt
+    Create a cart drawer upsell section that displays recommended products when items are added to cart. Include product images, titles, prices, and add-to-cart buttons. Make it visually appealing and responsive, with the ability to show complementary or related products based on what's currently in the cart.
+
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .cart-upsell-{{ ai_gen_id }} {
+    padding: 20px 0;
+    border-top: 1px solid {{ block.settings.divider_color }};
+    margin-top: 20px;
+  }
+
+  .cart-upsell__heading-{{ ai_gen_id }} {
+    font-size: {{ block.settings.heading_size }}px;
+    margin-bottom: 15px;
+    color: {{ block.settings.heading_color }};
+    text-align: {{ block.settings.text_alignment }};
+  }
+
+  .cart-upsell__products-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat({{ block.settings.products_per_row }}, 1fr);
+    gap: 16px;
+  }
+
+  .cart-upsell__product-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    background-color: {{ block.settings.product_bg_color }};
+    border-radius: {{ block.settings.product_border_radius }}px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  {% if block.settings.enable_hover_effect %}
+  .cart-upsell__product-{{ ai_gen_id }}:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+  {% endif %}
+
+  .cart-upsell__product-image-wrapper-{{ ai_gen_id }} {
+    position: relative;
+    padding-bottom: 100%;
+    overflow: hidden;
+  }
+
+  .cart-upsell__product-image-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .cart-upsell__product-image-placeholder-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f4f4f4;
+  }
+
+  .cart-upsell__product-image-placeholder-{{ ai_gen_id }} svg {
+    width: 60%;
+    height: 60%;
+  }
+
+  .cart-upsell__product-info-{{ ai_gen_id }} {
+    padding: 12px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cart-upsell__product-title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.product_title_size }}px;
+    margin: 0 0 8px;
+    color: {{ block.settings.product_title_color }};
+    {% if block.settings.title_text_transform == 'uppercase' %}
+      text-transform: uppercase;
+    {% endif %}
+  }
+
+  .cart-upsell__product-price-{{ ai_gen_id }} {
+    font-size: {{ block.settings.price_size }}px;
+    margin-bottom: 12px;
+    color: {{ block.settings.price_color }};
+  }
+
+  .cart-upsell__product-button-{{ ai_gen_id }} {
+    margin-top: auto;
+    padding: 8px 16px;
+    background-color: {{ block.settings.button_color }};
+    color: {{ block.settings.button_text_color }};
+    border: none;
+    border-radius: {{ block.settings.button_border_radius }}px;
+    cursor: pointer;
+    font-size: {{ block.settings.button_font_size }}px;
+    transition: background-color 0.3s ease;
+    text-align: center;
+  }
+
+  .cart-upsell__product-button-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.button_hover_color }};
+  }
+
+  .cart-upsell__product-button-{{ ai_gen_id }}[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .cart-upsell__loading-{{ ai_gen_id }} {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: {{ block.settings.button_text_color }};
+    animation: cart-upsell-spin-{{ ai_gen_id }} 0.8s linear infinite;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  @keyframes cart-upsell-spin-{{ ai_gen_id }} {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .cart-upsell__products-{{ ai_gen_id }} {
+      grid-template-columns: repeat({{ block.settings.products_per_row_mobile }}, 1fr);
+    }
+    
+    .cart-upsell__heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.heading_size | minus: 4 }}px;
+    }
+    
+    .cart-upsell__product-title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.product_title_size | minus: 2 }}px;
+    }
+  }
+{% endstyle %}
+
+<cart-drawer-upsell-{{ ai_gen_id }} class="cart-upsell-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <h3 class="cart-upsell__heading-{{ ai_gen_id }}">{{ block.settings.heading }}</h3>
+  <div class="cart-upsell__products-{{ ai_gen_id }}">
+    {% if block.settings.recommendation_type == 'related' %}
+      {% assign recommended_products = recommendations.products %}
+    {% elsif block.settings.recommendation_type == 'collection' and block.settings.collection != blank %}
+      {% assign recommended_products = block.settings.collection.products %}
+    {% elsif block.settings.recommendation_type == 'product_list' %}
+      {% assign recommended_products = block.settings.product_list %}
+    {% else %}
+      {% assign recommended_products = recommendations.products %}
+    {% endif %}
+
+    {% for product in recommended_products limit: block.settings.max_products %}
+      <div class="cart-upsell__product-{{ ai_gen_id }}" data-product-id="{{ product.id }}">
+        <div class="cart-upsell__product-image-wrapper-{{ ai_gen_id }}">
+          {% if product.featured_image %}
+            <img 
+              src="{{ product.featured_image | image_url: width: 300 }}" 
+              alt="{{ product.featured_image.alt | escape }}" 
+              class="cart-upsell__product-image-{{ ai_gen_id }}"
+              width="300"
+              height="300"
+              loading="lazy"
+            >
+          {% else %}
+            <div class="cart-upsell__product-image-placeholder-{{ ai_gen_id }}">
+              {{ 'product-apparel-1' | placeholder_svg_tag }}
+            </div>
+          {% endif %}
+        </div>
+        <div class="cart-upsell__product-info-{{ ai_gen_id }}">
+          <h4 class="cart-upsell__product-title-{{ ai_gen_id }}">{{ product.title }}</h4>
+          <div class="cart-upsell__product-price-{{ ai_gen_id }}">
+            {% if product.price_varies %}
+              <span>{{ product.price_min | money }}</span> - <span>{{ product.price_max | money }}</span>
+            {% else %}
+              <span>{{ product.price | money }}</span>
+            {% endif %}
+          </div>
+          <button 
+            class="cart-upsell__product-button-{{ ai_gen_id }}" 
+            data-product-id="{{ product.id }}"
+            {% if product.variants.size > 1 and block.settings.button_behavior == 'add_to_cart' %}
+              data-multiple-variants
+              onclick="window.location.href='{{ product.url }}'"
+            {% endif %}
+          >
+            {% if product.variants.size > 1 and block.settings.button_behavior == 'add_to_cart' %}
+              {{ block.settings.view_product_text }}
+            {% else %}
+              {{ block.settings.add_to_cart_text }}
+            {% endif %}
+            <span class="cart-upsell__loading-{{ ai_gen_id }}" style="display: none;"></span>
+          </button>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</cart-drawer-upsell-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class CartDrawerUpsell extends HTMLElement {
+      constructor() {
+        super();
+        this.addToCartButtons = this.querySelectorAll('.cart-upsell__product-button-{{ ai_gen_id }}:not([data-multiple-variants])');
+        this.cartDrawerElement = document.querySelector('cart-drawer, .cart-drawer');
+      }
+
+      connectedCallback() {
+        this.setupEventListeners();
+      }
+
+      setupEventListeners() {
+        this.addToCartButtons.forEach(button => {
+          button.addEventListener('click', this.handleAddToCart.bind(this));
+        });
+
+        // Listen for cart updates
+        document.addEventListener('cart:refresh', this.updateUpsellProducts.bind(this));
+      }
+
+      handleAddToCart(event) {
+        const button = event.currentTarget;
+        const productId = button.dataset.productId;
+        
+        if (button.hasAttribute('data-multiple-variants')) {
+          return; // This will navigate to the product page
+        }
+
+        this.toggleLoading(button, true);
+        
+        const formData = {
+          items: [{
+            id: productId,
+            quantity: 1
+          }]
+        };
+
+        fetch(window.Shopify.routes.root + 'cart/add.js', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+          this.toggleLoading(button, false);
+          
+          if (data.status) {
+            console.error('Error:', data.description);
+            return;
+          }
+          
+          // Refresh the cart drawer
+          if (typeof window.refreshCart === 'function') {
+            window.refreshCart();
+          } else if (this.cartDrawerElement) {
+            // Fallback to dispatching a custom event
+            document.dispatchEvent(new CustomEvent('cart:refresh', {
+              bubbles: true
+            }));
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          this.toggleLoading(button, false);
+        });
+      }
+
+      toggleLoading(button, isLoading) {
+        const loadingSpinner = button.querySelector('.cart-upsell__loading-{{ ai_gen_id }}');
+        
+        if (isLoading) {
+          button.setAttribute('disabled', '');
+          loadingSpinner.style.display = 'inline-block';
+        } else {
+          button.removeAttribute('disabled');
+          loadingSpinner.style.display = 'none';
+        }
+      }
+
+      updateUpsellProducts() {
+        // This method could be expanded to dynamically update recommended products
+        // based on what's in the cart, potentially using the Shopify Recommendations API
+        console.log('Cart updated, refreshing upsell products');
+      }
+    }
+
+    customElements.define('cart-drawer-upsell-{{ ai_gen_id }}', CartDrawerUpsell);
+  })();
+</script>
+
 {% schema %}
- {
-   "name": "AI_Block",
-   "tag": "shopify-ai-generated-block"
- }
+{
+  "name": "Cart Drawer Upsell",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "You might also like"
+    },
+    {
+      "type": "select",
+      "id": "recommendation_type",
+      "label": "Recommendation source",
+      "options": [
+        {
+          "value": "related",
+          "label": "Related to cart items"
+        },
+        {
+          "value": "collection",
+          "label": "From collection"
+        },
+        {
+          "value": "product_list",
+          "label": "Custom product selection"
+        }
+      ],
+      "default": "related"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection",
+      "info": "Select a collection to show products from",
+      "visible_if": "{{ settings.recommendation_type == 'collection' }}"
+    },
+    {
+      "type": "product_list",
+      "id": "product_list",
+      "label": "Products",
+      "limit": 12,
+      "visible_if": "{{ settings.recommendation_type == 'product_list' }}"
+    },
+    {
+      "type": "range",
+      "id": "max_products",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "label": "Maximum products to show",
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "products_per_row",
+      "label": "Products per row",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "select",
+      "id": "products_per_row_mobile",
+      "label": "Products per row on mobile",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "text",
+      "id": "add_to_cart_text",
+      "label": "Add to cart text",
+      "default": "Add to cart"
+    },
+    {
+      "type": "text",
+      "id": "view_product_text",
+      "label": "View product text",
+      "default": "View product"
+    },
+    {
+      "type": "select",
+      "id": "button_behavior",
+      "label": "Button behavior for products with variants",
+      "options": [
+        {
+          "value": "add_to_cart",
+          "label": "Link to product page"
+        },
+        {
+          "value": "view_product",
+          "label": "Link to product page"
+        }
+      ],
+      "default": "view_product",
+      "info": "Products with multiple variants will always link to the product page"
+    },
+    {
+      "type": "header",
+      "content": "Styling"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 14,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "label": "Heading size",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "product_title_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Product title size",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "price_size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Price size",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "button_font_size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Button font size",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "title_text_transform",
+      "label": "Product title text case",
+      "options": [
+        {
+          "value": "none",
+          "label": "Normal"
+        },
+        {
+          "value": "uppercase",
+          "label": "UPPERCASE"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_hover_effect",
+      "label": "Enable hover effect",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "product_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Product border radius",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Button border radius",
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "product_bg_color",
+      "label": "Product background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "product_title_color",
+      "label": "Product title color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "price_color",
+      "label": "Price color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button color",
+      "default": "#000f9f"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_color",
+      "label": "Button hover color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "divider_color",
+      "label": "Divider color",
+      "default": "#e6e6e6"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Cart Drawer Upsell"
+    }
+  ],
+  "tag": null
+}
 {% endschema %}
