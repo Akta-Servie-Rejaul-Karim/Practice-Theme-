@@ -1,6 +1,6 @@
 <p {{  block.shopify_attributes }}>Estimated delivery between 
 
-{{ "now" | date: "%B %d" | plus: 7 }}</p>
+{{ 'now' | date: "%s" | plus: 604800 | date: "%A, %B %d, %Y" }}
 
 
 {% schema %}
